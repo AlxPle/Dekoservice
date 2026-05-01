@@ -26,6 +26,10 @@ class GalleryImage extends Model
 
     public function getUrlAttribute(): string
     {
-        return asset('storage/gallery/' . $this->filename);
+        $path = str_starts_with($this->filename, 'gallery/')
+            ? $this->filename
+            : 'gallery/' . $this->filename;
+
+        return asset('storage/' . $path);
     }
 }

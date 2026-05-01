@@ -38,7 +38,7 @@
             class="aspect-square overflow-hidden rounded-xl bg-sand/20 group"
           >
             <img
-              :src="`/storage/gallery/${image.filename}`"
+              :src="imageUrl(image.filename)"
               :alt="image.alt_text || 'Dekoration'"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
@@ -72,7 +72,7 @@
               Schließen
             </button>
             <img
-              :src="`/storage/gallery/${lightboxImage.filename}`"
+              :src="imageUrl(lightboxImage.filename)"
               :alt="lightboxImage.alt_text || 'Dekoration'"
               class="w-full max-h-[80vh] object-contain rounded-xl"
             />
@@ -124,6 +124,13 @@ function closeLightbox() {
 
 function onKeydown(e) {
   if (e.key === 'Escape') closeLightbox()
+}
+
+function imageUrl(filename) {
+  if (!filename) return ''
+  return filename.startsWith('gallery/')
+    ? `/storage/${filename}`
+    : `/storage/gallery/${filename}`
 }
 
 onMounted(() => window.addEventListener('keydown', onKeydown))

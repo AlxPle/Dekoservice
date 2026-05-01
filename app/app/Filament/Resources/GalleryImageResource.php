@@ -30,6 +30,7 @@ class GalleryImageResource extends Resource
             FileUpload::make('filename')
                 ->label('Bild')
                 ->image()
+                ->disk('public')
                 ->directory('gallery')
                 ->required(),
             TextInput::make('alt_text')
@@ -61,7 +62,9 @@ class GalleryImageResource extends Resource
                 Tables\Columns\ImageColumn::make('filename')
                     ->label('Bild')
                     ->disk('public')
-                    ->directory('gallery'),
+                    ->getStateUsing(fn(GalleryImage $record): string => str_starts_with($record->filename, 'gallery/')
+                        ? $record->filename
+                        : 'gallery/' . $record->filename),
                 Tables\Columns\TextColumn::make('alt_text')
                     ->label('Beschreibung')
                     ->limit(40),
