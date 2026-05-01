@@ -60,14 +60,23 @@ sudo systemctl reload postgresql
 
 ---
 
-### 4. PHP расширение pdo_pgsql
+### 4. PHP расширения (все нужные сразу)
 
-По умолчанию отсутствует — без него `php artisan migrate` падает с `could not find driver`.
+По умолчанию в Fedora не установлены — устанавливать все за один раз, иначе Filament/Laravel будут падать по одному:
 
 ```bash
-sudo dnf install -y php-pgsql php-pdo
-php -m | grep pgsql   # должно показать pdo_pgsql и pgsql
+sudo dnf install -y php-pgsql php-pdo php-intl php-zip php-bcmath php-gd
+php -m | grep -E "^(intl|zip|pdo_pgsql|mbstring|xml|curl|bcmath|gd|fileinfo|tokenizer|ctype|dom)$"
 ```
+
+Ожидаемый результат: все 11 расширений выведены без ошибок.
+
+Что за что отвечает:
+- `php-pgsql` — подключение к PostgreSQL (`pdo_pgsql`)
+- `php-intl` — требуется Filament (интернационализация)
+- `php-zip` — требуется Filament (архивация)
+- `php-bcmath` — точная арифметика (Laravel, Filament)
+- `php-gd` — работа с изображениями (галерея)
 
 ---
 
@@ -162,7 +171,7 @@ php artisan breeze:install vue --pest
 ## Что делать дальше
 
 1. `npm install && npm run dev`
-2. `composer require filament/filament:"^3.0" -W`
+2. `composer require filament/filament:"^4.0" -W`  ← v3 не совместим с Laravel 13, нужен v4
 3. `php artisan storage:link`
 4. Начать строить компоненты по порядку из `design.md` раздел I
 

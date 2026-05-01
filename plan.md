@@ -11,7 +11,7 @@
 |---|---|
 | Backend | Laravel 13 |
 | Frontend | Vue 3 + Inertia.js |
-| Admin CMS | Filament v3 |
+| Admin CMS | Filament v4 |
 | БД | PostgreSQL |
 | Стили | Tailwind CSS v4 |
 | Аутентификация | Laravel Breeze |
@@ -40,7 +40,7 @@
 ### Фаза 1: Инициализация проекта
 1. `laravel new dekoservice` — выбрать Inertia + Vue 3 + PostgreSQL + Breeze
 2. Настроить `.env` — подключить PostgreSQL
-3. Установить Filament v3: `composer require filament/filament`
+3. Установить Filament v4: `composer require filament/filament:"^4.0" -W`
 4. Установить Tailwind CSS v4 (уже включён через Vite/Breeze)
 5. Настроить Laravel Storage: `php artisan storage:link`
 
@@ -281,7 +281,7 @@ dekoservice/
 
 ## Решения
 
-- **Стек**: Laravel 13 + Vue 3 + Inertia.js + Filament v3 + PostgreSQL + Tailwind v4
+- **Стек**: Laravel 13 + Vue 3 + Inertia.js + Filament v4 + PostgreSQL + Tailwind v4
 - **CMS**: Filament v3 (open-source, MIT)
 - **Email**: Laravel Mail + SMTP Strato (без сторонних сервисов)
 - **Фото**: Laravel Storage local (без Cloudinary)

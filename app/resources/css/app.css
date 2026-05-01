@@ -1,3 +1,22 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../**/*.blade.php";
+@source "../**/*.js";
+
+@theme {
+    --color-ivory: #faf7f2;
+    --color-sand: #d4b896;
+    --color-forest: #2d4a3e;
+    --color-berry: #8b3a62;
+    --font-sans: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+    --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+@layer base {
+    body {
+        background-color: var(--color-ivory);
+        color: var(--color-forest);
+    }
+}
