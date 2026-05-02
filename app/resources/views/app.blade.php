@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="de">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title inertia>{{ config('app.name', 'Helena Kunz Dekoservice') }}</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=playfair-display:400,600,700|lato:400,500,600&display=swap" rel="stylesheet" />
+    <title inertia>{{ config('app.name', 'Helena Kunz Dekoservice') }}</title>
 
-        <script type="application/ld+json">
+    <script type="application/ld+json">
         {
             "@@context": "https://schema.org",
             "@@type": "LocalBusiness",
@@ -27,18 +25,20 @@
             "sameAs": [],
             "openingHoursSpecification": {
                 "@@type": "OpeningHoursSpecification",
-                "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
                 "opens": "09:00",
                 "closes": "18:00"
             }
         }
-        </script>
+    </script>
 
-        @routes
-        @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
-        @inertiaHead
-    </head>
-    <body class="font-sans antialiased">
-        @inertia
-    </body>
+    @routes
+    @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
+    @inertiaHead
+</head>
+
+<body class="font-sans antialiased">
+    @inertia
+</body>
+
 </html>
