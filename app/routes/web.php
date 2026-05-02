@@ -3,6 +3,7 @@
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\PageController;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -33,3 +34,9 @@ Route::get('/sitemap.xml', function () {
     $xml = view('sitemap', ['pages' => $pages])->render();
     return Response::make($xml, 200, ['Content-Type' => 'application/xml']);
 })->name('sitemap');
+
+Route::fallback(function () {
+    return Inertia::render('NotFound', [
+        'canonicalUrl' => url('/'),
+    ])->toResponse(request())->setStatusCode(404);
+});
