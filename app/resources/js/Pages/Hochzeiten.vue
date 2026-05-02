@@ -172,3 +172,13 @@ const steps = [
   },
 ]
 </script>
+
+<style scoped>
+@reference "../../css/app.css";
+.btn-primary {
+  @apply bg-sand text-forest font-semibold px-6 py-3 rounded-full hover:bg-sand/80 transition-colors;
+}
+.btn-outline-light {
+  @apply border border-ivory/50 text-ivory font-semibold px-6 py-3 rounded-full hover:bg-ivory/10 transition-colors;
+}
+</style>
