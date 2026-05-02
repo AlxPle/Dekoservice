@@ -78,6 +78,13 @@ class ContactRequestResource extends Resource
                     ->label('Telefon'),
                 Tables\Columns\BadgeColumn::make('event_type')
                     ->label('Art')
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'wedding'   => 'Hochzeit',
+                        'birthday'  => 'Geburtstag',
+                        'corporate' => 'Firmenevent',
+                        'other'     => 'Sonstiges',
+                        default     => $state,
+                    })
                     ->colors([
                         'success' => 'wedding',
                         'warning' => 'birthday',
