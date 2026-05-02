@@ -28,6 +28,19 @@ apt-get install -y php${PHP_VER}-fpm php${PHP_VER}-cli php${PHP_VER}-mbstring \
   php${PHP_VER}-xml php${PHP_VER}-bcmath php${PHP_VER}-curl php${PHP_VER}-pgsql \
   php${PHP_VER}-zip php${PHP_VER}-intl php${PHP_VER}-opcache php${PHP_VER}-redis
 
+# Upload limits (match Filament form limits with a safety margin)
+cat > /etc/php/${PHP_VER}/fpm/conf.d/99-dekoservice-upload.ini <<'PHPINI'
+upload_max_filesize = 10M
+post_max_size = 12M
+memory_limit = 256M
+PHPINI
+
+cat > /etc/php/${PHP_VER}/cli/conf.d/99-dekoservice-upload.ini <<'PHPINI'
+upload_max_filesize = 10M
+post_max_size = 12M
+memory_limit = 256M
+PHPINI
+
 # --- Composer ---
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -69,6 +82,7 @@ server {
 
     root ${APP_DIR}/current/public;
     index index.php;
+    client_max_body_size 12m;
 
     ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;

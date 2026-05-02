@@ -29,9 +29,13 @@ class GalleryImageResource extends Resource
         return $schema->components([
             FileUpload::make('filename')
                 ->label('Bild')
+                ->validationAttribute('Bild')
                 ->image()
                 ->disk('public')
                 ->directory('gallery')
+                ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/pjpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'])
+                ->maxSize(10240)
+                ->helperText('Zulaessige Formate: JPG, PNG, WEBP. Maximale Dateigroesse: 10 MB.')
                 ->required(),
             TextInput::make('alt_text')
                 ->label('Bildbeschreibung (Alt-Text)')

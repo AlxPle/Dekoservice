@@ -22,7 +22,7 @@
     <!-- Sticky Header -->
     <header
       ref="headerEl"
-      class="sticky top-0 z-50 relative bg-ivory/95 backdrop-blur border-b border-sand/30 transition-shadow"
+      class="sticky top-0 z-50 bg-ivory/95 backdrop-blur border-b border-sand/30 transition-shadow"
       :class="{ 'shadow-md': scrolled }"
     >
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

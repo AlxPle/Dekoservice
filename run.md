@@ -1,5 +1,8 @@
 # Терминал 1 — Laravel
-cd app && php artisan serve --host=0.0.0.0 --port=8000
+cd app && npm run serve:upload
 
 # Терминал 2 — Vite (для hot reload)
 cd app && npm run dev
+
+# Или одной командой (Laravel + Vite)
+cd app && npm run dev:full
