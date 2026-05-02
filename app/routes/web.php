@@ -33,7 +33,7 @@ Route::get('/sitemap.xml', function () {
         ['loc' => $base . '/leistungen/geburtstage', 'changefreq' => 'monthly', 'priority' => '0.8'],
         ['loc' => $base . '/leistungen/firmenevents', 'changefreq' => 'monthly', 'priority' => '0.8'],
     ];
-    $xml = view('sitemap', ['pages' => $pages])->render();
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . view('sitemap', ['pages' => $pages])->render();
     return Response::make($xml, 200, ['Content-Type' => 'application/xml']);
 })->name('sitemap');
 
