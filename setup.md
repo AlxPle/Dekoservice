@@ -177,6 +177,36 @@ php artisan breeze:install vue --pest
 
 ---
 
+## Настройка APP_URL
+
+`APP_URL` в `.env` должен **точно совпадать** с адресом, по которому открывается сайт в браузере.
+
+### Локальная разработка
+
+```env
+APP_URL=http://127.0.0.1:8000
+```
+
+> **Важно:** `localhost` и `127.0.0.1` — разные origins с точки зрения браузера. Если `APP_URL=http://localhost:8000`, а страница открыта по адресу `http://127.0.0.1:8000`, браузер заблокирует запросы к хранилищу файлов из-за CORS-политики. Это ломает превью загруженных изображений в FilePond (Filament FileUpload).
+
+### Продакшн
+
+```env
+APP_URL=https://your-domain.com
+```
+
+`.env` добавлен в `.gitignore` и **не попадает в репозиторий**. На сервере нужно создать `.env` вручную или через деплой-скрипт и установить там `APP_URL` на реальный домен.
+
+После изменения `.env` обязательно очистить кеш конфига:
+
+```bash
+php artisan config:clear
+# или на продакшне:
+php artisan config:cache
+```
+
+---
+
 ## Известные проблемы и решения
 
 | Проблема | Причина | Решение |
@@ -186,6 +216,7 @@ php artisan breeze:install vue --pest
 | `could not find driver` при migrate | Нет расширения pdo_pgsql | `sudo dnf install -y php-pgsql` |
 | `Ident authentication failed` при migrate | pg_hba.conf использует ident | Заменить ident на md5, `reload postgresql` |
 | `breeze:install` → `no commands defined` | `composer require --dev` не регистрирует artisan-команды в некоторых окружениях | Запустить `php artisan` из корня проекта, убедиться что cwd правильный |
+| FilePond показывает бесконечный спиннер при редактировании | CORS: `APP_URL` не совпадает с реальным адресом браузера | Убедиться что `APP_URL` точно совпадает с адресом в браузере (см. раздел «Настройка APP_URL») |
 
 ---
 
