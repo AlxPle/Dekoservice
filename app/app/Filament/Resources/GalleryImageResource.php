@@ -66,6 +66,9 @@ class GalleryImageResource extends Resource
                 Tables\Columns\ImageColumn::make('filename')
                     ->label('Bild')
                     ->disk('public')
+                    ->width(80)
+                    ->height(60)
+                    ->extraImgAttributes(['style' => 'object-fit:cover;border-radius:4px;'])
                     ->getStateUsing(fn(GalleryImage $record): string => str_starts_with($record->filename, 'gallery/')
                         ? $record->filename
                         : 'gallery/' . $record->filename),
