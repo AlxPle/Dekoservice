@@ -39,6 +39,13 @@ class PageResource extends Resource
                 ->unique(Page::class, 'slug', ignoreRecord: true)
                 ->disabled(fn(?Page $record) => $record !== null)
                 ->dehydrated(),
+            TextInput::make('icon')
+                ->label('Icon (Emoji)')
+                ->maxLength(10),
+            Textarea::make('excerpt')
+                ->label('Kurzbeschreibung (Karte auf Startseite)')
+                ->maxLength(300)
+                ->rows(3),
             Textarea::make('meta_title')
                 ->label('Meta-Titel (SEO)')
                 ->maxLength(60),

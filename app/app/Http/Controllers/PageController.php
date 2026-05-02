@@ -2,15 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Page;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class PageController extends Controller
 {
+    private function leistungenData(): array
+    {
+        $hrefs = [
+            'hochzeiten'   => '/leistungen/hochzeiten',
+            'geburtstage'  => '/leistungen/geburtstage',
+            'firmenevents' => '/leistungen/firmenevents',
+        ];
+
+        $pages = Page::whereIn('slug', array_keys($hrefs))
+            ->get()
+            ->keyBy('slug');
+
+        return collect($hrefs)->map(function (string $href, string $slug) use ($pages) {
+            $page = $pages->get($slug);
+            return [
+                'icon'  => $page?->icon  ?? '',
+                'title' => $page?->title ?? $slug,
+                'desc'  => $page?->excerpt ?? '',
+                'href'  => $href,
+            ];
+        })->values()->all();
+    }
+
     public function home(): Response
     {
         return Inertia::render('Home', [
             'canonicalUrl' => url('/'),
+            'leistungen'   => $this->leistungenData(),
         ]);
     }
 
@@ -25,6 +50,7 @@ class PageController extends Controller
     {
         return Inertia::render('Leistungen', [
             'canonicalUrl' => url('/leistungen'),
+            'leistungen'   => $this->leistungenData(),
         ]);
     }
 

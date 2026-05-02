@@ -96,11 +96,12 @@
 <script setup>
 import MainLayout from '@/Layouts/MainLayout.vue'
 import { Link } from '@inertiajs/vue3'
-import { leistungen as services } from '@/data/leistungen'
-
 const props = defineProps({
   canonicalUrl: { type: String, default: null },
+  leistungen: { type: Array, default: () => [] },
 })
+
+const services = props.leistungen
 
 const steps = [
   { label: 'Anfrage senden', desc: 'Kontaktieren Sie uns per Formular, E-Mail oder WhatsApp.' },

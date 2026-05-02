@@ -68,5 +68,36 @@ class PageSeeder extends Seeder
         foreach ($pages as $page) {
             Page::updateOrCreate(['slug' => $page['slug']], $page);
         }
+
+        $leistungen = [
+            [
+                'slug'             => 'hochzeiten',
+                'icon'             => '💍',
+                'excerpt'          => 'Romantische Tischdekoration, Blumenarrangements, Lichterketten, Bögen und mehr – für Ihren unvergesslichsten Tag.',
+                'title'            => 'Hochzeiten',
+                'meta_title'       => 'Hochzeits-Dekoration – Helena Kunz Dekoservice',
+                'meta_description' => 'Romantische Hochzeitsdekoration: Tische, Blumenarrangements, Bögen und Lichterketten. Jetzt anfragen!',
+            ],
+            [
+                'slug'             => 'geburtstage',
+                'icon'             => '🎂',
+                'excerpt'          => 'Luftballons, Dekosäulen, Thementische – wir zaubern die perfekte Atmosphäre für jede Feier.',
+                'title'            => 'Geburtstage & Partys',
+                'meta_title'       => 'Geburtstags-Dekoration – Helena Kunz Dekoservice',
+                'meta_description' => 'Luftballons, Dekosäulen, Thementische für Geburtstage und Partys. Wir gestalten Ihre Feier!',
+            ],
+            [
+                'slug'             => 'firmenevents',
+                'icon'             => '🏢',
+                'excerpt'          => 'Professionelle Raumgestaltung für Messen, Konferenzen und Firmenveranstaltungen – mit klarem Stil.',
+                'title'            => 'Firmenevents',
+                'meta_title'       => 'Firmenevent-Dekoration – Helena Kunz Dekoservice',
+                'meta_description' => 'Professionelle Raumgestaltung für Messen, Konferenzen und Firmenveranstaltungen.',
+            ],
+        ];
+
+        foreach ($leistungen as $page) {
+            Page::updateOrCreate(['slug' => $page['slug']], $page);
+        }
     }
 }
