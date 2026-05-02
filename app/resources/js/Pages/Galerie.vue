@@ -58,27 +58,61 @@
     <Teleport to="body">
       <Transition name="fade">
         <div
-          v-if="lightboxImage"
-          class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          v-if="lightboxIndex !== null"
+          class="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4"
           @click.self="closeLightbox"
         >
           <div class="relative max-w-3xl w-full">
+            <!-- Close -->
             <button
               @click="closeLightbox"
               class="absolute -top-10 right-0 text-white/70 hover:text-white text-sm flex items-center gap-1"
+              aria-label="Schließen"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
               Schließen
             </button>
+
+            <!-- Counter -->
+            <span class="absolute -top-10 left-0 text-white/50 text-sm">
+              {{ lightboxIndex + 1 }} / {{ filteredImages.length }}
+            </span>
+
+            <!-- Prev -->
+            <button
+              v-if="filteredImages.length > 1"
+              @click="prevImage"
+              class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 text-white/70 hover:text-white p-2 transition-colors"
+              aria-label="Vorheriges Bild"
+            >
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+
+            <!-- Image -->
             <img
-              :src="imageUrl(lightboxImage.filename)"
-              :alt="lightboxImage.alt_text || 'Dekoration'"
+              :src="imageUrl(filteredImages[lightboxIndex].filename)"
+              :alt="filteredImages[lightboxIndex].alt_text || 'Dekoration'"
               class="w-full max-h-[80vh] object-contain rounded-xl"
             />
-            <p v-if="lightboxImage.alt_text" class="text-white/70 text-sm text-center mt-3">
-              {{ lightboxImage.alt_text }}
+
+            <!-- Next -->
+            <button
+              v-if="filteredImages.length > 1"
+              @click="nextImage"
+              class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-white/70 hover:text-white p-2 transition-colors"
+              aria-label="Nächstes Bild"
+            >
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+
+            <p v-if="filteredImages[lightboxIndex].alt_text" class="text-white/70 text-sm text-center mt-3">
+              {{ filteredImages[lightboxIndex].alt_text }}
             </p>
           </div>
         </div>
@@ -106,7 +140,7 @@ const categories = [
 ]
 
 const activeCategory = ref('all')
-const lightboxImage = ref(null)
+const lightboxIndex = ref(null)
 
 const filteredImages = computed(() =>
   activeCategory.value === 'all'
@@ -115,17 +149,28 @@ const filteredImages = computed(() =>
 )
 
 function openLightbox(image) {
-  lightboxImage.value = image
+  lightboxIndex.value = filteredImages.value.indexOf(image)
   document.body.style.overflow = 'hidden'
 }
 
 function closeLightbox() {
-  lightboxImage.value = null
+  lightboxIndex.value = null
   document.body.style.overflow = ''
+}
+
+function prevImage() {
+  const len = filteredImages.value.length
+  lightboxIndex.value = (lightboxIndex.value - 1 + len) % len
+}
+
+function nextImage() {
+  lightboxIndex.value = (lightboxIndex.value + 1) % filteredImages.value.length
 }
 
 function onKeydown(e) {
   if (e.key === 'Escape') closeLightbox()
+  if (e.key === 'ArrowLeft') prevImage()
+  if (e.key === 'ArrowRight') nextImage()
 }
 
 function imageUrl(filename) {
