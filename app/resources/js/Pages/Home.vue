@@ -96,31 +96,11 @@
 <script setup>
 import MainLayout from '@/Layouts/MainLayout.vue'
 import { Link } from '@inertiajs/vue3'
+import { leistungen as services } from '@/data/leistungen'
 
 const props = defineProps({
   canonicalUrl: { type: String, default: null },
 })
-
-const services = [
-  {
-    icon: '💍',
-    title: 'Hochzeiten',
-    href: '/leistungen/hochzeiten',
-    desc: 'Romantische Tischdekoration, Blumenarrangements, Lichterketten, Bögen und mehr – für Ihren unvergesslichsten Tag.',
-  },
-  {
-    icon: '🎂',
-    title: 'Geburtstage & Partys',
-    href: '/leistungen/geburtstage',
-    desc: 'Luftballons, Dekosäulen, Thementische – wir zaubern die perfekte Atmosphäre für jede Feier.',
-  },
-  {
-    icon: '🏢',
-    title: 'Firmenevents',
-    href: '/leistungen/firmenevents',
-    desc: 'Professionelle Raumgestaltung für Messen, Konferenzen und Firmenveranstaltungen – mit klarem Stil.',
-  },
-]
 
 const steps = [
   { label: 'Anfrage senden', desc: 'Kontaktieren Sie uns per Formular, E-Mail oder WhatsApp.' },

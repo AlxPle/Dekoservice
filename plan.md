@@ -1,7 +1,29 @@
 # Plan: Редизайн Dekoservice Kunz
 
 ## TL;DR
-Переделать сайт-визитку dekoservice-kunz.de с устаревшего Strato CMS на современный стек Laravel 13 + Vue 3 + Inertia.js + Filament v3 + PostgreSQL. Хозяйка Helena получает удобную admin-панель для управления галереей и контентом. Всё open-source, хостинг на Hetzner VPS (~€4/мес).
+Переделать сайт-визитку dekoservice-kunz.de с устаревшего Strato CMS на современный стек Laravel 13 + Vue 3 + Inertia.js + Filament v4 + PostgreSQL. Хозяйка Helena получает удобную admin-панель для управления галереей и контентом. Всё open-source, хостинг на Hetzner VPS (~€4/мес).
+
+## Статус на 2026-05-02
+
+Общий прогресс: ядро проекта реализовано и работает в dev, основные бизнес-фичи готовы.
+
+### Выполнено
+- Фаза 1 (инициализация): Laravel 13 + Inertia/Vue + PostgreSQL + Filament v4 + Tailwind v4, storage link настроен.
+- Фаза 2 (БД и модели): таблицы `pages`, `gallery_images`, `contact_requests` созданы, модели подключены.
+- Фаза 3 (Filament): `GalleryImageResource`, `PageResource`, `ContactRequestResource` работают, сортировка галереи есть.
+- Фаза 4 (backend): `PageController`, `GalleryController`, `ContactController`, `ContactFormRequest`, `ContactMail` реализованы.
+- Фаза 5 (frontend, базовая часть): страницы `Home`, `Galerie`, `Kontakt`, `UeberUns`, `Impressum` готовы.
+- Дополнительно сверх плана: отдельные страницы услуг (`/leistungen/*`) и кастомная Inertia-страница 404.
+
+### Частично выполнено / изменено
+- Публичная часть уже не только «одностраничная с якорями»: добавлены отдельные SEO-страницы услуг.
+- Контактная форма сделана через Inertia form, а не через VeeValidate (функционально рабочая).
+- Sitemap сейчас реализован динамическим роутом `/sitemap.xml`; пакет Spatie установлен, но генерация через него пока не используется.
+
+### Осталось сделать
+- Фаза 6: формально закрыть SEO/perf чеклист (Lighthouse-замеры, финальная оптимизация изображений в pipeline).
+- Фаза 7: завершить production rollout и автоматизировать CI/CD деплой до состояния «под ключ».
+- Добавить/расширить автотесты для новых страниц услуг и 404 fallback.
 
 ---
 
@@ -24,14 +46,20 @@
 
 ## Структура сайта
 
-Новая структура (SPA через Inertia):
+Актуальная структура (Inertia + Vue):
 - `/` — Главная (Hero + Услуги + Галерея-превью + О нас + Контакт)
 - `/galerie` — Полная галерея с лайтбоксом
 - `/ueber-uns` — О Хелене
 - `/kontakt` — Форма + карта
 - `/impressum` — Юридическая информация
+- `/leistungen/hochzeiten` — Отдельная страница услуги
+- `/leistungen/geburtstage` — Отдельная страница услуги
+- `/leistungen/firmenevents` — Отдельная страница услуги
 
-Публичная часть — одностраничная с якорями (#leistungen, #galerie, #kontakt) для плавной навигации.
+Дополнительно:
+- `Route::fallback` с кастомной страницей 404.
+
+Публичная часть совмещает якоря на главной и отдельные контентные страницы для SEO и удобной навигации.
 
 ---
 
@@ -282,7 +310,7 @@ dekoservice/
 ## Решения
 
 - **Стек**: Laravel 13 + Vue 3 + Inertia.js + Filament v4 + PostgreSQL + Tailwind v4
-- **CMS**: Filament v3 (open-source, MIT)
+- **CMS**: Filament v4 (open-source, MIT)
 - **Email**: Laravel Mail + SMTP Strato (без сторонних сервисов)
 - **Фото**: Laravel Storage local (без Cloudinary)
 - **Хостинг**: Hetzner VPS Frankfurt (GDPR-compliant)

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/galerie', [GalleryController::class, 'index'])->name('galerie');
 Route::get('/ueber-uns', [PageController::class, 'ueberUns'])->name('ueber-uns');
+Route::get('/leistungen', [PageController::class, 'leistungen'])->name('leistungen');
 Route::get('/leistungen/hochzeiten', [PageController::class, 'hochzeiten'])->name('leistungen.hochzeiten');
 Route::get('/leistungen/geburtstage', [PageController::class, 'geburtstagePartys'])->name('leistungen.geburtstage');
 Route::get('/leistungen/firmenevents', [PageController::class, 'firmenevents'])->name('leistungen.firmenevents');
@@ -25,6 +26,7 @@ Route::get('/sitemap.xml', function () {
         ['loc' => $base . '/',            'changefreq' => 'weekly',  'priority' => '1.0'],
         ['loc' => $base . '/galerie',     'changefreq' => 'weekly',  'priority' => '0.8'],
         ['loc' => $base . '/ueber-uns',   'changefreq' => 'monthly', 'priority' => '0.7'],
+        ['loc' => $base . '/leistungen',  'changefreq' => 'monthly', 'priority' => '0.9'],
         ['loc' => $base . '/kontakt',     'changefreq' => 'monthly', 'priority' => '0.8'],
         ['loc' => $base . '/impressum',         'changefreq' => 'yearly',  'priority' => '0.2'],
         ['loc' => $base . '/leistungen/hochzeiten', 'changefreq' => 'monthly', 'priority' => '0.8'],

@@ -21,6 +21,13 @@ class PageController extends Controller
         ]);
     }
 
+    public function leistungen(): Response
+    {
+        return Inertia::render('Leistungen', [
+            'canonicalUrl' => url('/leistungen'),
+        ]);
+    }
+
     public function hochzeiten(): Response
     {
         return Inertia::render('Hochzeiten', [
