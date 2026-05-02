@@ -58,6 +58,7 @@
           <button
             class="md:hidden p-2 rounded-lg text-forest hover:bg-sand/20 transition-colors"
             @click="mobileOpen = !mobileOpen"
+            :aria-expanded="mobileOpen"
             aria-label="Navigation öffnen"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

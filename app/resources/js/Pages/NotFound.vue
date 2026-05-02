@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <meta name="robots" content="noindex, nofollow" />
+  </Head>
   <MainLayout
     title="404 – Seite nicht gefunden"
     description="Diese Seite gibt es leider nicht. Zurück zur Startseite von Helena Kunz Dekoservice."
@@ -45,7 +48,7 @@
 
 <script setup>
 import MainLayout from '@/Layouts/MainLayout.vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, Head } from '@inertiajs/vue3'
 
 defineProps({
   canonicalUrl: { type: String, default: null },

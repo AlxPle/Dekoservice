@@ -85,8 +85,11 @@ class GenerateGalleryThumbnail implements ShouldQueue
             $thumbAbsolutePath = $disk->path($thumbPath);
 
             imagejpeg($thumbImage, $thumbAbsolutePath, 82);
+            imagedestroy($thumbImage);
             ImageOptimizer::optimize($thumbAbsolutePath);
         }
+
+        imagedestroy($sourceImage);
 
         // Keep legacy path for backwards compatibility with existing references.
         $primaryPath = $disk->path('gallery/thumbs/' . $basename . '-276.jpg');

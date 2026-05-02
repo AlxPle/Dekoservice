@@ -131,10 +131,9 @@ function submit() {
   form.post(route('kontakt.store'))
 }
 
-// Leaflet map — coordinates are placeholder, update with Helena's actual address
 const mapEl = ref(null)
-const LAT = 51.1657
-const LNG = 10.4515
+const LAT = 51.0340066
+const LNG = 8.3758148
 let map = null
 
 onMounted(async () => {
@@ -148,7 +147,7 @@ onMounted(async () => {
     shadowUrl: new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).href,
   })
 
-  map = L.map(mapEl.value, { scrollWheelZoom: false }).setView([LAT, LNG], 13)
+  map = L.map(mapEl.value, { scrollWheelZoom: false }).setView([LAT, LNG], 16)
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -157,7 +156,7 @@ onMounted(async () => {
 
   L.marker([LAT, LNG])
     .addTo(map)
-    .bindPopup('<strong>Helena Kunz</strong><br>Dekoration & Event-Verleih')
+    .bindPopup('<strong>Helena Kunz</strong><br>Fritz-Krämer-Straße 30<br>57319 Bad Berleburg')
     .openPopup()
 })
 
