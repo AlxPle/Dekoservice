@@ -27,8 +27,8 @@ Route::get('/sitemap.xml', function () {
         ['loc' => $base . '/kontakt',     'changefreq' => 'monthly', 'priority' => '0.8'],
         ['loc' => $base . '/impressum',         'changefreq' => 'yearly',  'priority' => '0.2'],
         ['loc' => $base . '/leistungen/hochzeiten', 'changefreq' => 'monthly', 'priority' => '0.8'],
-        ['loc' => $base . '/leistungen/geburtstage','changefreq' => 'monthly', 'priority' => '0.8'],
-        ['loc' => $base . '/leistungen/firmenevents','changefreq' => 'monthly', 'priority' => '0.8'],
+        ['loc' => $base . '/leistungen/geburtstage', 'changefreq' => 'monthly', 'priority' => '0.8'],
+        ['loc' => $base . '/leistungen/firmenevents', 'changefreq' => 'monthly', 'priority' => '0.8'],
     ];
     $xml = view('sitemap', ['pages' => $pages])->render();
     return Response::make($xml, 200, ['Content-Type' => 'application/xml']);
