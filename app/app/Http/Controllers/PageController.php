@@ -21,6 +21,27 @@ class PageController extends Controller
         ]);
     }
 
+    public function hochzeiten(): Response
+    {
+        return Inertia::render('Hochzeiten', [
+            'canonicalUrl' => url('/leistungen/hochzeiten'),
+        ]);
+    }
+
+    public function geburtstagePartys(): Response
+    {
+        return Inertia::render('GeburtstagePartys', [
+            'canonicalUrl' => url('/leistungen/geburtstage'),
+        ]);
+    }
+
+    public function firmenevents(): Response
+    {
+        return Inertia::render('Firmenevents', [
+            'canonicalUrl' => url('/leistungen/firmenevents'),
+        ]);
+    }
+
     public function kontakt(): Response
     {
         return Inertia::render('Kontakt', [

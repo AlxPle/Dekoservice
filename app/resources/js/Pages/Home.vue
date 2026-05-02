@@ -31,11 +31,12 @@
           <p class="text-forest/60 max-w-xl mx-auto">Von der Idee bis zur perfekten Dekoration — wir begleiten Sie auf jedem Schritt.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div v-for="service in services" :key="service.title" class="service-card">
+          <Link v-for="service in services" :key="service.title" :href="service.href" class="service-card hover:shadow-md transition-shadow">
             <div class="text-berry mb-4 text-4xl">{{ service.icon }}</div>
             <h3 class="font-serif text-xl font-semibold text-forest mb-2">{{ service.title }}</h3>
             <p class="text-forest/70 text-sm leading-relaxed">{{ service.desc }}</p>
-          </div>
+            <span class="inline-block mt-4 text-sm font-medium text-berry/80 hover:text-berry">Mehr erfahren →</span>
+          </Link>
         </div>
       </div>
     </section>
@@ -104,16 +105,19 @@ const services = [
   {
     icon: '💍',
     title: 'Hochzeiten',
+    href: '/leistungen/hochzeiten',
     desc: 'Romantische Tischdekoration, Blumenarrangements, Lichterketten, Bögen und mehr – für Ihren unvergesslichsten Tag.',
   },
   {
     icon: '🎂',
     title: 'Geburtstage & Partys',
+    href: '/leistungen/geburtstage',
     desc: 'Luftballons, Dekosäulen, Thementische – wir zaubern die perfekte Atmosphäre für jede Feier.',
   },
   {
     icon: '🏢',
     title: 'Firmenevents',
+    href: '/leistungen/firmenevents',
     desc: 'Professionelle Raumgestaltung für Messen, Konferenzen und Firmenveranstaltungen – mit klarem Stil.',
   },
 ]
