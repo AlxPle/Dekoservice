@@ -21,7 +21,8 @@
   <div class="min-h-screen flex flex-col font-sans">
     <!-- Sticky Header -->
     <header
-      class="sticky top-0 z-50 bg-ivory/95 backdrop-blur border-b border-sand/30 transition-shadow"
+      ref="headerEl"
+      class="sticky top-0 z-50 relative bg-ivory/95 backdrop-blur border-b border-sand/30 transition-shadow"
       :class="{ 'shadow-md': scrolled }"
     >
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,7 +32,7 @@
             <span class="text-xl font-serif font-semibold text-forest tracking-wide group-hover:text-forest/80 transition-colors">
               Helena Kunz
             </span>
-            <span class="hidden sm:inline text-sand/70 text-sm">Dekoration & Events</span>
+            
           </Link>
 
           <!-- Desktop Nav -->
@@ -66,24 +67,25 @@
           </button>
         </div>
 
-        <!-- Mobile menu -->
-        <Transition name="slide">
-          <nav v-if="mobileOpen" class="md:hidden border-t border-sand/30 py-3 flex flex-col gap-1">
-            <Link href="/#leistungen" class="mobile-link" @click="mobileOpen = false">Leistungen</Link>
-            <Link href="/galerie" class="mobile-link" @click="mobileOpen = false">Galerie</Link>
-            <Link href="/ueber-uns" class="mobile-link" @click="mobileOpen = false">Über uns</Link>
-            <Link href="/kontakt" class="mobile-link" @click="mobileOpen = false">Kontakt</Link>
-            <a
-              href="https://wa.me/491705865783"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="mobile-link text-green-700 font-medium"
-            >
-              WhatsApp
-            </a>
-          </nav>
-        </Transition>
       </div>
+
+      <!-- Mobile menu overlay -->
+      <Transition name="slide">
+        <nav v-if="mobileOpen" class="md:hidden absolute top-full left-0 right-0 bg-ivory/98 backdrop-blur border-b border-sand/30 shadow-lg py-3 flex flex-col gap-1 px-4 sm:px-6 z-40">
+          <Link href="/#leistungen" class="mobile-link" @click="mobileOpen = false">Leistungen</Link>
+          <Link href="/galerie" class="mobile-link" @click="mobileOpen = false">Galerie</Link>
+          <Link href="/ueber-uns" class="mobile-link" @click="mobileOpen = false">Über uns</Link>
+          <Link href="/kontakt" class="mobile-link" @click="mobileOpen = false">Kontakt</Link>
+          <a
+            href="https://wa.me/491705865783"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mobile-link text-green-700 font-medium"
+          >
+            WhatsApp
+          </a>
+        </nav>
+      </Transition>
     </header>
 
     <!-- Main content -->
@@ -162,13 +164,26 @@ defineProps({
 
 const scrolled = ref(false)
 const mobileOpen = ref(false)
+const headerEl = ref(null)
 
 function onScroll() {
   scrolled.value = window.scrollY > 10
 }
 
-onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
-onUnmounted(() => window.removeEventListener('scroll', onScroll))
+function onClickOutside(e) {
+  if (mobileOpen.value && headerEl.value && !headerEl.value.contains(e.target)) {
+    mobileOpen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', onScroll, { passive: true })
+  document.addEventListener('click', onClickOutside)
+})
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll)
+  document.removeEventListener('click', onClickOutside)
+})
 </script>
 
 <style scoped>
@@ -226,12 +241,11 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 .footer-link:hover { color: #faf7f2; }
 .slide-enter-active,
 .slide-leave-active {
-  transition: all 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 .slide-enter-from,
 .slide-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
 }
 .wa-float {
   position: fixed;
