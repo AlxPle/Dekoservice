@@ -74,6 +74,13 @@ class GalleryImageResource extends Resource
                     ->limit(40),
                 Tables\Columns\BadgeColumn::make('category')
                     ->label('Kategorie')
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'wedding'   => 'Hochzeit',
+                        'birthday'  => 'Geburtstag',
+                        'corporate' => 'Firmenevent',
+                        'other'     => 'Sonstiges',
+                        default     => $state,
+                    })
                     ->colors([
                         'success' => 'wedding',
                         'warning' => 'birthday',
@@ -91,6 +98,7 @@ class GalleryImageResource extends Resource
             ->reorderable('sort_order')
             ->filters([
                 Tables\Filters\SelectFilter::make('category')
+                    ->label('Kategorie')
                     ->options([
                         'wedding'   => 'Hochzeit',
                         'birthday'  => 'Geburtstag',
