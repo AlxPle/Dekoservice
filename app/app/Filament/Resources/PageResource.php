@@ -4,8 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PageResource\Pages;
 use App\Models\Page;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Textarea;
@@ -38,7 +36,9 @@ class PageResource extends Resource
                 ->label('Slug (URL)')
                 ->required()
                 ->maxLength(255)
-                ->unique(Page::class, 'slug', ignoreRecord: true),
+                ->unique(Page::class, 'slug', ignoreRecord: true)
+                ->disabled(fn(?Page $record) => $record !== null)
+                ->dehydrated(),
             Textarea::make('meta_title')
                 ->label('Meta-Titel (SEO)')
                 ->maxLength(60),
@@ -70,19 +70,19 @@ class PageResource extends Resource
             ->actions([
                 EditAction::make(),
             ])
-            ->bulkActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPages::route('/'),
-            'create' => Pages\CreatePage::route('/create'),
-            'edit'   => Pages\EditPage::route('/{record}/edit'),
+            'index' => Pages\ListPages::route('/'),
+            'edit'  => Pages\EditPage::route('/{record}/edit'),
         ];
     }
 }
