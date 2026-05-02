@@ -44,7 +44,7 @@
               für einen stimmigen Gesamtauftritt.
             </p>
           </div>
-          <div class="bg-sand/30 rounded-2xl aspect-[4/3] flex items-center justify-center text-7xl">
+          <div class="bg-sand/30 rounded-2xl aspect-4/3 flex items-center justify-center text-7xl">
             🏢
           </div>
         </div>

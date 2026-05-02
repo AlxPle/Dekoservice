@@ -27,7 +27,7 @@
     <section class="py-16 bg-ivory">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div class="bg-sand/30 rounded-2xl aspect-[4/3] flex items-center justify-center text-7xl order-2 md:order-1">
+          <div class="bg-sand/30 rounded-2xl aspect-4/3 flex items-center justify-center text-7xl order-2 md:order-1">
             🎂
           </div>
           <div class="space-y-4 text-forest/80 leading-relaxed order-1 md:order-2">

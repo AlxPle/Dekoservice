@@ -42,7 +42,7 @@
               Kein Wunsch ist zu groß, kein Detail zu klein. Wir sind von der Beratung bis zum Abbau an Ihrer Seite.
             </p>
           </div>
-          <div class="bg-sand/30 rounded-2xl aspect-[4/3] flex items-center justify-center text-7xl">
+          <div class="bg-sand/30 rounded-2xl aspect-4/3 flex items-center justify-center text-7xl">
             💍
           </div>
         </div>
