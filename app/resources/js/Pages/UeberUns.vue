@@ -2,6 +2,7 @@
   <MainLayout
     title="Über uns – Helena Kunz Dekoservice"
     description="Helena Kunz – Leidenschaft für Dekoration und Eventgestaltung. Persönlich, kreativ und zuverlässig."
+    :canonicalUrl="canonicalUrl"
   >
 
     <section class="py-16 bg-ivory">
@@ -62,6 +63,10 @@
 <script setup>
 import MainLayout from '@/Layouts/MainLayout.vue'
 import { Link } from '@inertiajs/vue3'
+
+const props = defineProps({
+  canonicalUrl: { type: String, default: null },
+})
 
 const values = [
   {

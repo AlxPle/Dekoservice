@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             $adminPassword = 'password';
         }
 
-        // Admin user for Filament panel (Helena)
+        // Admin user for Filament panel
         User::updateOrCreate(
             ['email' => $adminEmail],
             [

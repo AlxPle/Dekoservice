@@ -16,6 +16,7 @@ class GalleryController extends Controller
 
         return Inertia::render('Galerie', [
             'images' => $images,
+            'canonicalUrl' => url('/galerie'),
         ]);
     }
 }

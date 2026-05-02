@@ -2,6 +2,7 @@
   <MainLayout
     title="Galerie – Helena Kunz Dekoservice"
     description="Inspiration und Beispiele unserer Dekorationen für Hochzeiten, Geburtstage und Firmenevents."
+    :canonicalUrl="canonicalUrl"
   >
 
     <section class="py-16 bg-ivory">
@@ -93,6 +94,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   images: { type: Array, default: () => [] },
+  canonicalUrl: { type: String, default: null },
 })
 
 const categories = [

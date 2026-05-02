@@ -2,6 +2,21 @@
   <Head>
     <title>{{ title }}</title>
     <meta v-if="description" name="description" :content="description" />
+    <!-- Open Graph -->
+    <meta property="og:title" :content="title" />
+    <meta v-if="description" property="og:description" :content="description" />
+    <meta property="og:type" content="website" />
+    <meta v-if="canonicalUrl" property="og:url" :content="canonicalUrl" />
+    <meta v-if="ogImage" property="og:image" :content="ogImage" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content="Helena Kunz Dekoservice" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" :content="title" />
+    <meta v-if="description" name="twitter:description" :content="description" />
+    <meta v-if="ogImage" name="twitter:image" :content="ogImage" />
+    <!-- Canonical -->
+    <link v-if="canonicalUrl" rel="canonical" :href="canonicalUrl" />
   </Head>
   <div class="min-h-screen flex flex-col font-sans">
     <!-- Sticky Header -->
@@ -141,6 +156,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 defineProps({
   title: { type: String, default: 'Helena Kunz Dekoservice' },
   description: { type: String, default: null },
+  canonicalUrl: { type: String, default: null },
+  ogImage: { type: String, default: null },
 })
 
 const scrolled = ref(false)

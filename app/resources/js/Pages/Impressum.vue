@@ -2,6 +2,7 @@
   <MainLayout
     title="Impressum – Helena Kunz Dekoservice"
     description="Rechtliche Informationen und Impressum von Helena Kunz Dekoservice."
+    :canonicalUrl="canonicalUrl"
   >
 
     <section class="py-16 bg-ivory">
@@ -60,4 +61,8 @@
 
 <script setup>
 import MainLayout from '@/Layouts/MainLayout.vue'
+
+const props = defineProps({
+  canonicalUrl: { type: String, default: null },
+})
 </script>

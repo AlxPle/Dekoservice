@@ -19,7 +19,18 @@
             "telephone": "+491705865783",
             "email": "info@dekoservice-kunz.de",
             "priceRange": "EUR",
-            "areaServed": "DE"
+            "areaServed": "DE",
+            "address": {
+                "@@type": "PostalAddress",
+                "addressCountry": "DE"
+            },
+            "sameAs": [],
+            "openingHoursSpecification": {
+                "@@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+                "opens": "09:00",
+                "closes": "18:00"
+            }
         }
         </script>
 

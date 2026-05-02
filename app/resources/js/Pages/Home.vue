@@ -2,6 +2,7 @@
   <MainLayout
     title="Helena Kunz – Dekoration & Event-Verleih"
     description="Hochwertiger Deko-Verleih für Hochzeiten, Geburtstage und Firmenevents. Jetzt Angebot anfragen!"
+    :canonicalUrl="canonicalUrl"
   >
 
     <!-- Hero -->
@@ -94,6 +95,10 @@
 <script setup>
 import MainLayout from '@/Layouts/MainLayout.vue'
 import { Link } from '@inertiajs/vue3'
+
+const props = defineProps({
+  canonicalUrl: { type: String, default: null },
+})
 
 const services = [
   {

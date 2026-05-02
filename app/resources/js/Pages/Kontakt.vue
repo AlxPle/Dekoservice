@@ -2,6 +2,7 @@
   <MainLayout
     title="Kontakt & Anfrage – Helena Kunz Dekoservice"
     description="Kontaktieren Sie uns für Ihr Event. Kostenlose Beratung für Hochzeiten, Geburtstage und Firmenfeiern."
+    :canonicalUrl="canonicalUrl"
   >
 
     <section class="py-16 bg-ivory">
@@ -111,6 +112,10 @@ import MainLayout from '@/Layouts/MainLayout.vue'
 import { useForm } from '@inertiajs/vue3'
 import { ref, onMounted, onUnmounted } from 'vue'
 import 'leaflet/dist/leaflet.css'
+
+const props = defineProps({
+  canonicalUrl: { type: String, default: null },
+})
 
 const form = useForm({
   first_name: '',

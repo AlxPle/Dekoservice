@@ -15,7 +15,6 @@ install_dependencies
 setup_env
 build_assets
 run_migrations
-generate_sitemap
 optimize
 activate_release
 restart_queue
@@ -52,11 +51,6 @@ npm run build
 @task('run_migrations', ['on' => 'web'])
 echo "--- Running migrations ---"
 php {{ $releasePath }}/artisan migrate --force
-@endtask
-
-@task('generate_sitemap', ['on' => 'web'])
-echo "--- Generating sitemap ---"
-php {{ $releasePath }}/artisan sitemap:generate
 @endtask
 
 @task('optimize', ['on' => 'web'])
