@@ -29,7 +29,7 @@ class PageResource extends Resource
                 ->required()
                 ->maxLength(255)
                 ->live(onBlur: true)
-                ->hint(fn (?string $state): string => mb_strlen($state ?? '') . ' / 255')
+                ->hint(fn(?string $state): string => mb_strlen($state ?? '') . ' / 255')
                 ->afterStateUpdated(function (Set $set, ?string $state) {
                     $set('slug', \Illuminate\Support\Str::slug($state));
                 }),
@@ -44,27 +44,27 @@ class PageResource extends Resource
                 ->label('Icon (Emoji)')
                 ->maxLength(10)
                 ->live(onBlur: true)
-                ->hint(fn (?string $state): string => mb_strlen($state ?? '') . ' / 10'),
+                ->hint(fn(?string $state): string => mb_strlen($state ?? '') . ' / 10'),
             Textarea::make('excerpt')
                 ->label('Kurzbeschreibung (Karte auf Startseite)')
                 ->maxLength(300)
                 ->rows(3)
                 ->live(onBlur: true)
-                ->hint(fn (?string $state): string => mb_strlen($state ?? '') . ' / 300'),
+                ->hint(fn(?string $state): string => mb_strlen($state ?? '') . ' / 300'),
             Textarea::make('meta_title')
                 ->label('Meta-Titel (SEO)')
                 ->maxLength(60)
                 ->rows(2)
                 ->live(onBlur: true)
-                ->hint(fn (?string $state): string => mb_strlen($state ?? '') . ' / 60')
-                ->hintColor(fn (?string $state): string => mb_strlen($state ?? '') > 55 ? 'warning' : 'gray'),
+                ->hint(fn(?string $state): string => mb_strlen($state ?? '') . ' / 60')
+                ->hintColor(fn(?string $state): string => mb_strlen($state ?? '') > 55 ? 'warning' : 'gray'),
             Textarea::make('meta_description')
                 ->label('Meta-Beschreibung (SEO)')
                 ->maxLength(160)
                 ->rows(3)
                 ->live(onBlur: true)
-                ->hint(fn (?string $state): string => mb_strlen($state ?? '') . ' / 160')
-                ->hintColor(fn (?string $state): string => mb_strlen($state ?? '') > 150 ? 'warning' : 'gray'),
+                ->hint(fn(?string $state): string => mb_strlen($state ?? '') . ' / 160')
+                ->hintColor(fn(?string $state): string => mb_strlen($state ?? '') > 150 ? 'warning' : 'gray'),
             KeyValue::make('content')
                 ->label('Inhalt')
                 ->columnSpanFull(),
