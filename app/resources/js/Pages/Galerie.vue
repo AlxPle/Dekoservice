@@ -36,20 +36,21 @@
             v-for="image in filteredImages"
             :key="image.id"
             @click="openLightbox(image)"
-            @mouseenter="preloadFull(image)"
-            @focusin="preloadFull(image)"
             class="aspect-square overflow-hidden rounded-xl bg-sand/20 group"
           >
-            <img
-              :src="gridImageSrc(image)"
-              :srcset="gridImageSrcSet(image)"
-              sizes="(max-width: 640px) 46vw, (max-width: 768px) 30vw, (max-width: 1024px) 22vw, 276px"
-              :alt="image.alt_text || 'Dekoration'"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              loading="lazy"
-              decoding="async"
-              @error="onGridImageError($event, image)"
-            />
+            <picture class="contents">
+              <source media="(max-width: 640px)" :srcset="image.thumb_urls?.[184]">
+              <source media="(max-width: 1024px)" :srcset="image.thumb_urls?.[276]">
+              <source :srcset="image.thumb_urls?.[552]">
+              <img
+                :src="image.thumb_urls?.[276] || fallbackImageUrl(image.filename)"
+                :alt="image.alt_text || 'Dekoration'"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                decoding="async"
+                @error="onGridImageError($event, image)"
+              />
+            </picture>
           </button>
         </div>
         <div v-else class="text-center py-20 text-forest/40">
@@ -129,7 +130,7 @@
 
 <script setup>
 import MainLayout from '@/Layouts/MainLayout.vue'
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   images: { type: Array, default: () => [] },
@@ -146,8 +147,6 @@ const categories = [
 
 const activeCategory = ref('all')
 const lightboxIndex = ref(null)
-const loadedFull = ref({})
-const preloading = new Set()
 
 const filteredImages = computed(() =>
   activeCategory.value === 'all'
@@ -156,7 +155,6 @@ const filteredImages = computed(() =>
 )
 
 function openLightbox(image) {
-  preloadFull(image)
   lightboxIndex.value = filteredImages.value.indexOf(image)
   document.body.style.overflow = 'hidden'
 }
@@ -183,70 +181,19 @@ function onKeydown(e) {
 
 function fallbackImageUrl(filename) {
   if (!filename) return ''
-
   return filename.startsWith('gallery/')
     ? `/storage/${filename}`
     : `/storage/gallery/${filename}`
-}
-
-function thumbImageUrl(image) {
-  return image.thumb_url || fallbackImageUrl(image.filename)
 }
 
 function fullImageUrl(image) {
   return image.full_url || image.url || fallbackImageUrl(image.filename)
 }
 
-function gridImageSrc(image) {
-  return loadedFull.value[image.id]
-    ? fullImageUrl(image)
-    : thumbImageUrl(image)
-}
-
-function gridImageSrcSet(image) {
-  if (loadedFull.value[image.id]) {
-    return ''
-  }
-
-  return image.thumb_srcset || ''
-}
-
 function onGridImageError(event, image) {
+  event.target.closest('picture')?.querySelectorAll('source').forEach(s => s.remove())
   event.target.src = fullImageUrl(image)
 }
-
-function preloadFull(image) {
-  if (!image?.id || loadedFull.value[image.id] || preloading.has(image.id)) {
-    return
-  }
-
-  preloading.add(image.id)
-
-  const full = new Image()
-  full.decoding = 'async'
-  full.onload = () => {
-    loadedFull.value = {
-      ...loadedFull.value,
-      [image.id]: true,
-    }
-    preloading.delete(image.id)
-  }
-  full.onerror = () => {
-    preloading.delete(image.id)
-  }
-  full.src = fullImageUrl(image)
-}
-
-function preloadVisibleBatch(images) {
-  images.slice(0, 12).forEach((image, index) => {
-    setTimeout(() => preloadFull(image), index * 90)
-  })
-}
-
-watch(filteredImages, (images) => {
-  if (!images.length) return
-  preloadVisibleBatch(images)
-}, { immediate: true })
 
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))

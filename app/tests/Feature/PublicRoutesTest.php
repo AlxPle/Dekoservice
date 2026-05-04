@@ -81,3 +81,17 @@ test('gallery only returns active images', function () {
     expect($filenames)->toContain('active.jpg')
         ->not->toContain('inactive.jpg');
 });
+
+test('unknown route returns 404', function () {
+    $response = $this->get('/diese-seite-existiert-nicht');
+    $response->assertStatus(404);
+});
+
+test('sitemap contains all expected urls', function () {
+    $response = $this->get('/sitemap.xml');
+    $response->assertStatus(200);
+
+    foreach (['/leistungen/hochzeiten', '/leistungen/geburtstage', '/leistungen/firmenevents', '/ueber-uns', '/kontakt', '/impressum'] as $path) {
+        $response->assertSee($path, false);
+    }
+});

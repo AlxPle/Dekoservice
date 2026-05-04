@@ -6,7 +6,6 @@ use App\Observers\GalleryImageObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 #[ObservedBy(GalleryImageObserver::class)]
 class GalleryImage extends Model
@@ -25,7 +24,7 @@ class GalleryImage extends Model
         'sort_order' => 'integer',
     ];
 
-    protected $appends = ['url', 'full_url', 'thumb_url', 'thumb_srcset'];
+    protected $appends = ['url', 'full_url', 'thumb_url', 'thumb_urls'];
 
     public function getUrlAttribute(): string
     {
@@ -39,34 +38,16 @@ class GalleryImage extends Model
 
     public function getThumbUrlAttribute(): string
     {
-        $thumbPath = $this->thumbPath();
-
-        if (!Storage::disk('public')->exists($thumbPath)) {
-            return $this->getFullUrlAttribute();
-        }
-
-        return asset('storage/' . $thumbPath);
+        return asset('storage/' . $this->thumbPath());
     }
 
-    public function getThumbSrcsetAttribute(): string
+    public function getThumbUrlsAttribute(): array
     {
-        $disk = Storage::disk('public');
-        $sizes = [184, 276, 552];
-        $entries = [];
-
-        foreach ($sizes as $size) {
-            $path = $this->thumbPath($size);
-
-            if ($disk->exists($path)) {
-                $entries[] = asset('storage/' . $path) . ' ' . $size . 'w';
-            }
+        $urls = [];
+        foreach ([184, 276, 552] as $size) {
+            $urls[$size] = asset('storage/' . $this->thumbPath($size));
         }
-
-        if (empty($entries)) {
-            return $this->getThumbUrlAttribute() . ' 276w';
-        }
-
-        return implode(', ', $entries);
+        return $urls;
     }
 
     public function normalizedPath(): string

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Server setup script for Hetzner CX22 Ubuntu 24.04
+# Server setup script for Hetzner CX23 Ubuntu 24.04
 # Run as root: bash setup-server.sh
 
 set -e
