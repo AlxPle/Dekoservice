@@ -94,6 +94,9 @@ docker compose exec app php artisan key:generate --force
 # Выполняем миграции
 docker compose exec app php artisan migrate --force
 
+# Создаем администратора для панели управления Filament
+docker compose exec app php artisan make:filament-user --name="Admin" --email="admin@example.com" --password="changeme"
+
 # Создаем симлинк для публичных файлов
 docker compose exec app php artisan storage:link
 
