@@ -33,12 +33,28 @@ class GenerateGalleryThumbnail implements ShouldQueue
             : 'gallery/' . $this->filename;
 
         $disk = Storage::disk('public');
+        $actualPath = $relativePath;
 
-        if (!$disk->exists($relativePath)) {
-            return;
+        if (!$disk->exists($actualPath)) {
+            // If the database already references .webp but the file on disk is still .jpg/.png, resolve it
+            $pathWithoutExt = preg_replace('/\.[\w]+$/', '', $relativePath);
+            $found = false;
+            
+            foreach (['jpg', 'jpeg', 'png', 'heic', 'heif'] as $ext) {
+                $testPath = $pathWithoutExt . '.' . $ext;
+                if ($disk->exists($testPath)) {
+                    $actualPath = $testPath;
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                return;
+            }
         }
 
-        $sourceBinary = $disk->get($relativePath);
+        $sourceBinary = $disk->get($actualPath);
         $sourceImage = @imagecreatefromstring($sourceBinary);
 
         if ($sourceImage === false) {
@@ -58,7 +74,8 @@ class GenerateGalleryThumbnail implements ShouldQueue
             $sourceImage,
             $sourceWidth,
             $sourceHeight,
-            $disk->path($relativePath),
+            $disk->path($relativePath), // target .webp path
+            $disk->path($actualPath),   // source actual file path
         );
 
         // Refresh dimensions after potential resize
@@ -143,15 +160,11 @@ class GenerateGalleryThumbnail implements ShouldQueue
         \GdImage $image,
         int $width,
         int $height,
-        string $absolutePath,
+        string $targetAbsolutePath,
+        string $sourceAbsolutePath,
     ): \GdImage {
         $needsResize = $width > self::MAX_WIDTH || $height > self::MAX_HEIGHT;
-        $isAlreadyWebp = str_ends_with(strtolower($absolutePath), '.webp');
-
-        // If it's already small enough AND already WebP, nothing to do
-        if (!$needsResize && $isAlreadyWebp) {
-            return $image;
-        }
+        $isAlreadyWebp = str_ends_with(strtolower($sourceAbsolutePath), '.webp');
 
         if ($needsResize) {
             $ratio = min(self::MAX_WIDTH / $width, self::MAX_HEIGHT / $height);
@@ -167,20 +180,13 @@ class GenerateGalleryThumbnail implements ShouldQueue
             $image = $resized;
         }
 
-        // Convert to WebP on disk (replace the original file)
-        if (!$isAlreadyWebp) {
-            $webpPath = preg_replace('/\.\w+$/', '.webp', $absolutePath);
-            imagewebp($image, $webpPath, self::WEBP_QUALITY);
-            ImageOptimizer::optimize($webpPath);
+        // Convert and save as WebP
+        imagewebp($image, $targetAbsolutePath, self::WEBP_QUALITY);
+        ImageOptimizer::optimize($targetAbsolutePath);
 
-            // Remove old non-WebP original
-            if ($absolutePath !== $webpPath && file_exists($absolutePath)) {
-                unlink($absolutePath);
-            }
-        } else {
-            // Already WebP, just overwrite with resized version
-            imagewebp($image, $absolutePath, self::WEBP_QUALITY);
-            ImageOptimizer::optimize($absolutePath);
+        // If the source file was a JPG/PNG and located elsewhere, delete it
+        if ($sourceAbsolutePath !== $targetAbsolutePath && file_exists($sourceAbsolutePath)) {
+            unlink($sourceAbsolutePath);
         }
 
         return $image;
