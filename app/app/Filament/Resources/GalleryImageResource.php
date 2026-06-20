@@ -34,12 +34,11 @@ class GalleryImageResource extends Resource
                 ->imageResizeMode('contain')
                 ->imageResizeTargetWidth('1920')
                 ->imageResizeTargetHeight('1080')
-                ->optimize('webp')
                 ->disk('public')
                 ->directory('gallery')
                 ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/pjpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'])
                 ->maxSize(10240)
-                ->helperText('Zulaessige Formate: JPG, PNG, WEBP. Maximale Dateigroesse: 10 MB. Bilder werden automatisch optimiert und auf WebP konvertiert.')
+                ->helperText('Zulaessige Formate: JPG, PNG, WEBP. Maximale Dateigroesse: 10 MB. Bilder werden автоматически оптимизированы и переведены в WebP.')
                 ->required(),
             TextInput::make('alt_text')
                 ->label('Bildbeschreibung (Alt-Text)')

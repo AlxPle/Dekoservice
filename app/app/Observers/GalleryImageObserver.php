@@ -9,6 +9,13 @@ use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class GalleryImageObserver
 {
+    public function saving(GalleryImage $galleryImage): void
+    {
+        if ($galleryImage->filename && !str_ends_with(strtolower($galleryImage->filename), '.webp')) {
+            $galleryImage->filename = preg_replace('/\.\w+$/', '.webp', $galleryImage->filename);
+        }
+    }
+
     public function created(GalleryImage $galleryImage): void
     {
         $this->optimizeAndQueueThumbnail($galleryImage);
