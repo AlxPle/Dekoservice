@@ -6,6 +6,7 @@ use App\Observers\GalleryImageObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 #[ObservedBy(GalleryImageObserver::class)]
 class GalleryImage extends Model
@@ -24,7 +25,7 @@ class GalleryImage extends Model
         'sort_order' => 'integer',
     ];
 
-    protected $appends = ['url', 'full_url', 'thumb_url', 'thumb_urls'];
+    protected $appends = ['url', 'full_url', 'optimized_url', 'thumb_url', 'thumb_urls'];
 
     public function getUrlAttribute(): string
     {
@@ -50,6 +51,21 @@ class GalleryImage extends Model
         return $urls;
     }
 
+    /**
+     * Return the URL for the optimized full-size image (prefers .webp on disk).
+     */
+    public function getOptimizedUrlAttribute(): string
+    {
+        $normalized = $this->normalizedPath();
+        $webpPath = preg_replace('/\.[\w]+$/', '.webp', $normalized);
+
+        if (Storage::disk('public')->exists($webpPath)) {
+            return asset('storage/' . $webpPath);
+        }
+
+        return asset('storage/' . $normalized);
+    }
+
     public function normalizedPath(): string
     {
         return str_starts_with($this->filename, 'gallery/')
@@ -62,9 +78,9 @@ class GalleryImage extends Model
         $basename = pathinfo($this->normalizedPath(), PATHINFO_FILENAME);
 
         if ($size !== null) {
-            return 'gallery/thumbs/' . $basename . '-' . $size . '.jpg';
+            return 'gallery/thumbs/' . $basename . '-' . $size . '.webp';
         }
 
-        return 'gallery/thumbs/' . $basename . '.jpg';
+        return 'gallery/thumbs/' . $basename . '.webp';
     }
 }

@@ -49,15 +49,18 @@ test('updating other fields does not dispatch thumbnail job', function () {
 
 test('deleting a gallery image removes thumbnails', function () {
     Storage::disk('public')->put('gallery/test.jpg', 'fake-image-content');
+    Storage::disk('public')->put('gallery/thumbs/test-184.webp', 'fake-thumb');
+    Storage::disk('public')->put('gallery/thumbs/test-276.webp', 'fake-thumb');
+    Storage::disk('public')->put('gallery/thumbs/test-552.webp', 'fake-thumb');
+    // Also test cleanup of legacy .jpg thumbs
     Storage::disk('public')->put('gallery/thumbs/test-184.jpg', 'fake-thumb');
-    Storage::disk('public')->put('gallery/thumbs/test-276.jpg', 'fake-thumb');
-    Storage::disk('public')->put('gallery/thumbs/test-552.jpg', 'fake-thumb');
 
     $image = GalleryImage::factory()->create(['filename' => 'test.jpg']);
 
     $image->delete();
 
+    Storage::disk('public')->assertMissing('gallery/thumbs/test-184.webp');
+    Storage::disk('public')->assertMissing('gallery/thumbs/test-276.webp');
+    Storage::disk('public')->assertMissing('gallery/thumbs/test-552.webp');
     Storage::disk('public')->assertMissing('gallery/thumbs/test-184.jpg');
-    Storage::disk('public')->assertMissing('gallery/thumbs/test-276.jpg');
-    Storage::disk('public')->assertMissing('gallery/thumbs/test-552.jpg');
 });

@@ -213,7 +213,7 @@ function fallbackImageUrl(filename) {
 }
 
 function fullImageUrl(image) {
-  return image.full_url || image.url || fallbackImageUrl(image.filename)
+  return image.optimized_url || image.full_url || image.url || fallbackImageUrl(image.filename)
 }
 
 function onGridImageError(event, image) {

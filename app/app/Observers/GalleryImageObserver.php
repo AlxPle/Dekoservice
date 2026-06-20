@@ -25,13 +25,7 @@ class GalleryImageObserver
                     PATHINFO_FILENAME,
                 );
 
-                $disk = Storage::disk('public');
-
-                foreach ($disk->files('gallery/thumbs') as $path) {
-                    if (str_starts_with(pathinfo($path, PATHINFO_FILENAME), $oldBase)) {
-                        $disk->delete($path);
-                    }
-                }
+                $this->deleteThumbsByBasename($oldBase);
             }
 
             $this->optimizeAndQueueThumbnail($galleryImage);
@@ -58,11 +52,22 @@ class GalleryImageObserver
      */
     public function deleted(GalleryImage $galleryImage): void
     {
-        $disk = Storage::disk('public');
         $base = pathinfo($galleryImage->normalizedPath(), PATHINFO_FILENAME);
+        $this->deleteThumbsByBasename($base);
+    }
+
+    /**
+     * Delete all thumbnail files (both .webp and legacy .jpg) for a given basename.
+     */
+    private function deleteThumbsByBasename(string $basename): void
+    {
+        $disk = Storage::disk('public');
 
         foreach ($disk->files('gallery/thumbs') as $path) {
-            if (str_starts_with(pathinfo($path, PATHINFO_FILENAME), $base)) {
+            $fileBasename = pathinfo($path, PATHINFO_FILENAME);
+
+            // Match "basename-184", "basename-276", "basename-552", or just "basename"
+            if ($fileBasename === $basename || str_starts_with($fileBasename, $basename . '-')) {
                 $disk->delete($path);
             }
         }
