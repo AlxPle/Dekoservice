@@ -66,6 +66,11 @@ QUEUE_CONNECTION=database
 SESSION_DRIVER=database
 ```
 
+Важно:
+
+1. В `app/.env` должна быть строка `APP_KEY=`. Если её нет, `php artisan key:generate` не сможет записать ключ.
+2. `DB_PASSWORD` в `app/.env` должен совпадать с `POSTGRES_PASSWORD` в `docker-compose.yml`. Если пароль поменяли только в одном месте, будет ошибка `password authentication failed`.
+
 ---
 
 ## 3. Запуск стека через Dockge
@@ -81,6 +86,8 @@ SESSION_DRIVER=database
 
 ```bash
 cd /opt/stacks/dekoservice
+docker compose run --rm app composer install --no-dev --optimize-autoloader --no-interaction
+grep -q '^APP_KEY=' app/.env || echo 'APP_KEY=' >> app/.env
 docker compose exec app php artisan key:generate --force
 docker compose exec app php artisan migrate --force
 docker compose exec app php artisan storage:link
