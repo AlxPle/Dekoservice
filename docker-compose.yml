@@ -5,8 +5,11 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     working_dir: /var/www/dekoservice.alxple.com
+    command: sh -c "mkdir -p /tmp/build_volume && cp -r /var/www/dekoservice.alxple.com/public/build/* /tmp/build_volume/ 2>/dev/null || true; php-fpm"
     volumes:
-      - ./app:/var/www/dekoservice.alxple.com
+      - ./app/.env:/var/www/dekoservice.alxple.com/.env
+      - ./app/storage:/var/www/dekoservice.alxple.com/storage
+      - public_build:/tmp/build_volume
     depends_on:
       - db
       - redis
@@ -19,7 +22,8 @@ services:
     ports:
       - "127.0.0.1:18080:8080"
     volumes:
-      - ./app:/var/www/dekoservice.alxple.com:ro
+      - ./app/public:/var/www/dekoservice.alxple.com/public:ro
+      - public_build:/var/www/dekoservice.alxple.com/public/build:ro
       - ./app/deploy/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
 
   queue:
@@ -30,7 +34,8 @@ services:
     working_dir: /var/www/dekoservice.alxple.com
     command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
     volumes:
-      - ./app:/var/www/dekoservice.alxple.com
+      - ./app/.env:/var/www/dekoservice.alxple.com/.env
+      - ./app/storage:/var/www/dekoservice.alxple.com/storage
     depends_on:
       - app
       - db
@@ -44,7 +49,8 @@ services:
     working_dir: /var/www/dekoservice.alxple.com
     command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
     volumes:
-      - ./app:/var/www/dekoservice.alxple.com
+      - ./app/.env:/var/www/dekoservice.alxple.com/.env
+      - ./app/storage:/var/www/dekoservice.alxple.com/storage
     depends_on:
       - app
       - db
@@ -66,3 +72,4 @@ services:
 
 volumes:
   pg_data:
+  public_build:
