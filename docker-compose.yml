@@ -22,7 +22,7 @@ services:
     ports:
       - "127.0.0.1:18080:8080"
     volumes:
-      - ./app/public:/var/www/dekoservice.alxple.com/public:ro
+      - ./app/public:/var/www/dekoservice.alxple.com/public
       - public_build:/var/www/dekoservice.alxple.com/public/build:ro
       - ./app/deploy/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
 
