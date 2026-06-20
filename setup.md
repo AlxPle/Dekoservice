@@ -207,28 +207,6 @@ php artisan config:cache
 
 ---
 
-## Публичный показ сайта через ngrok
-
-Позволяет открыть локальный сервер по временной публичной ссылке без деплоя.
-
-### Установка ngrok (один раз)
-
-```bash
-cd /tmp
-curl -Lo ngrok.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-tar xzf ngrok.tgz
-mv ngrok ~/.local/bin/
-ngrok version
-```
-
-Зарегистрироваться на [ngrok.com](https://ngrok.com) → в личном кабинете скопировать authtoken → выполнить:
-
-```bash
-ngrok config add-authtoken <YOUR_TOKEN>
-```
-
-> Без токена работает, но тоннель сбрасывается каждые 2 часа и показывает предупреждение.
-
 ### Запуск
 
 В **первом терминале** — запустить сервер:

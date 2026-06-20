@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    volumes:
+      - /var/www/dekoservice.alxple.com:/var/www/dekoservice.alxple.com
+    environment:
+      - APP_ENV=production
+    expose:
+      - "9000"
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - /var/www/dekoservice.alxple.com:/var/www/dekoservice.alxple.com:ro
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+
+volumes:
+  caddy_data:
+  caddy_config:
