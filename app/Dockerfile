@@ -27,8 +27,8 @@ COPY . .
 COPY --from=node-builder /app/public/build ./public/build
 
 RUN chown -R www-data:www-data /var/www/dekoservice.alxple.com \
-    && find /var/www/dekoservice.alxple.com -type d -exec chmod 750 {} \; \
-    && find /var/www/dekoservice.alxple.com -type f -exec chmod 640 {} \;
+    && find /var/www/dekoservice.alxple.com -type d -exec chmod 755 {} \; \
+    && find /var/www/dekoservice.alxple.com -type f -exec chmod 644 {} \;
 
 EXPOSE 9000
 CMD ["php-fpm"]
