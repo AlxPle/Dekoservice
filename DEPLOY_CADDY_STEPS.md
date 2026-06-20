@@ -3,10 +3,9 @@
 Этот документ теперь описывает один каноничный вариант запуска для вашего сервера:
 
 1. Caddy уже установлен на хосте и является единой точкой входа (80/443).
-2. Dockge управляет только стеком приложения.
-3. В проектном стеке не публикуются порты 80/443.
-
-Старые варианты с отдельным Caddy внутри проекта считаются устаревшими и удалены.
+2. Стек приложения запускается через Docker Compose.
+3. В проектном стеке наружу торчит только локальный порт для Nginx (18080).
+4. Весь код (бэкенд и фронтенд) **встраивается в образ при сборке** (multi-stage build), а не монтируется с хоста. С хоста пробрасываются только `.env` и папка `storage`.
 
 ---
 
@@ -21,13 +20,11 @@ sudo systemctl status caddy --no-pager
 ```
 
 Проверить DNS:
-
 1. `A` для `dekoservice.alxple.com` указывает на `46.225.68.147`.
-2. `AAAA` указывает на конкретный IPv6 адрес сервера (не на префикс `/64`).
 
 ---
 
-## 2. Подготовка проекта для Dockge
+## 2. Подготовка проекта на сервере
 
 Разместить репозиторий на сервере, например:
 
@@ -66,41 +63,50 @@ QUEUE_CONNECTION=database
 SESSION_DRIVER=database
 ```
 
-Важно:
-
-1. В `app/.env` должна быть строка `APP_KEY=`. Если её нет, `php artisan key:generate` не сможет записать ключ.
-2. `DB_PASSWORD` в `app/.env` должен совпадать с `POSTGRES_PASSWORD` в `docker-compose.yml`. Если пароль поменяли только в одном месте, будет ошибка `password authentication failed`.
+Дать права на папку `storage` (так как она пробрасывается в контейнер, где работает пользователь www-data):
+```bash
+sudo chmod -R 777 app/storage
+```
 
 ---
 
-## 3. Запуск стека через Dockge
+## 3. Запуск стека
 
-В Dockge используйте `docker-compose.yml` из корня этого репозитория.
-
-Важно:
-
-1. Внешний порт публикует только сервис `web` и только в localhost (`127.0.0.1:18080`).
-2. `app`, `queue`, `scheduler`, `db`, `redis` наружу не публикуются.
-
-После `Deploy` выполнить первичную инициализацию:
+Поскольку код больше не монтируется с хоста, а встраивается внутрь, **перед каждым запуском необходимо собирать образ**.
 
 ```bash
 cd /opt/stacks/dekoservice
-docker compose run --rm app composer install --no-dev --optimize-autoloader --no-interaction
+
+# Сборка образа (загрузит пакеты Composer и соберет фронтенд через npm run build)
+docker compose build app
+
+# Запуск стека в фоне
+docker compose up -d
+```
+
+После первого запуска выполнить первичную инициализацию (создание ключа, БД и симлинка):
+
+```bash
+# Генерируем ключ, если его нет
 grep -q '^APP_KEY=' app/.env || echo 'APP_KEY=' >> app/.env
 docker compose exec app php artisan key:generate --force
+
+# Выполняем миграции
 docker compose exec app php artisan migrate --force
+
+# Создаем симлинк для публичных файлов
 docker compose exec app php artisan storage:link
-docker compose exec app php artisan config:cache
-docker compose exec app php artisan route:cache
-docker compose exec app php artisan view:cache
+
+# Очищаем и кэшируем конфиги
+docker compose exec app php artisan optimize:clear
+docker compose exec app php artisan optimize
 ```
 
 ---
 
 ## 4. Конфиг Caddy на хосте
 
-Добавьте в основной Caddyfile на хосте:
+Добавьте в основной Caddyfile на хосте (`/etc/caddy/Caddyfile`):
 
 ```caddyfile
 dekoservice.alxple.com {
@@ -132,10 +138,7 @@ curl -I http://127.0.0.1:18080
 curl -I https://dekoservice.alxple.com
 ```
 
-Должно быть:
-
-1. Локальный порт отвечает `200`/`302`.
-2. По домену есть валидный TLS и рабочая страница.
+Должно отвечать `200 OK` или `302 Found`.
 
 ---
 
@@ -143,43 +146,38 @@ curl -I https://dekoservice.alxple.com
 
 ```bash
 cd /opt/stacks/dekoservice
-docker compose logs -f app
-docker compose logs -f web
-docker compose logs -f queue
-docker compose logs -f scheduler
-docker compose logs -f db
+docker compose logs --tail=100 -f app
+docker compose logs --tail=100 -f web
 ```
 
-Логи Laravel:
-
+Логи Laravel (хранятся на хосте благодаря volume):
 ```bash
 tail -f app/storage/logs/laravel.log
 ```
 
-Логи Caddy:
-
-```bash
-sudo journalctl -u caddy -f
-```
-
 ---
 
-## 7. Обновление приложения
+## 7. Обновление приложения (Деплой новых фич)
+
+При любом изменении кода (PHP, JS, CSS) нужно обновить репозиторий, пересобрать образ и перезапустить контейнеры:
 
 ```bash
 cd /opt/stacks/dekoservice
 git pull
+
+# Пересобираем образ с новым кодом
 docker compose build app
+
+# Перезапускаем контейнеры (Docker сам заменит только те, чей образ изменился)
 docker compose up -d
+
+# Накатываем новые миграции БД (если есть)
 docker compose exec app php artisan migrate --force
+
+# Сбрасываем кэш
+docker compose exec app php artisan optimize:clear
 docker compose exec app php artisan optimize
+
+# Перезапускаем воркеры очередей, чтобы они подхватили новый код
 docker compose exec app php artisan queue:restart
 ```
-
----
-
-## 8. Что больше не используем
-
-1. Отдельный Caddy контейнер в проектном `docker-compose.yml`.
-2. Публикацию `80:80` и `443:443` из стека приложения.
-3. Несколько альтернативных сценариев деплоя в этом проекте.
