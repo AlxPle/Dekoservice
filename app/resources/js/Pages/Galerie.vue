@@ -68,7 +68,11 @@
           class="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4"
           @click.self="closeLightbox"
         >
-          <div class="relative max-w-3xl w-full">
+          <div 
+            class="relative max-w-3xl w-full"
+            @touchstart="handleTouchStart"
+            @touchend="handleTouchEnd"
+          >
             <!-- Close -->
             <button
               @click="closeLightbox"
@@ -90,10 +94,10 @@
             <button
               v-if="filteredImages.length > 1"
               @click="prevImage"
-              class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 text-white/70 hover:text-white p-2 transition-colors"
+              class="absolute left-0 top-1/2 -translate-y-1/2 md:-translate-x-12 text-white/70 hover:text-white p-2 transition-colors z-10"
               aria-label="Vorheriges Bild"
             >
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-10 h-10 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
               </svg>
             </button>
@@ -102,22 +106,22 @@
             <img
               :src="fullImageUrl(filteredImages[lightboxIndex])"
               :alt="filteredImages[lightboxIndex].alt_text || 'Dekoration'"
-              class="w-full max-h-[80vh] object-contain rounded-xl"
+              class="w-full max-h-[80vh] object-contain rounded-xl select-none"
             />
 
             <!-- Next -->
             <button
               v-if="filteredImages.length > 1"
               @click="nextImage"
-              class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-white/70 hover:text-white p-2 transition-colors"
+              class="absolute right-0 top-1/2 -translate-y-1/2 md:translate-x-12 text-white/70 hover:text-white p-2 transition-colors z-10"
               aria-label="Nächstes Bild"
             >
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-10 h-10 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
               </svg>
             </button>
 
-            <p v-if="filteredImages[lightboxIndex].alt_text" class="text-white/70 text-sm text-center mt-3">
+            <p v-if="filteredImages[lightboxIndex].alt_text" class="text-white/70 text-sm text-center mt-3 px-8">
               {{ filteredImages[lightboxIndex].alt_text }}
             </p>
           </div>
@@ -177,6 +181,28 @@ function onKeydown(e) {
   if (e.key === 'Escape') closeLightbox()
   if (e.key === 'ArrowLeft') prevImage()
   if (e.key === 'ArrowRight') nextImage()
+}
+
+const touchStartX = ref(0)
+const touchEndX = ref(0)
+
+function handleTouchStart(e) {
+  touchStartX.value = e.changedTouches[0].screenX
+}
+
+function handleTouchEnd(e) {
+  touchEndX.value = e.changedTouches[0].screenX
+  handleSwipe()
+}
+
+function handleSwipe() {
+  const swipeThreshold = 50
+  if (touchEndX.value < touchStartX.value - swipeThreshold) {
+    nextImage()
+  }
+  if (touchEndX.value > touchStartX.value + swipeThreshold) {
+    prevImage()
+  }
 }
 
 function fallbackImageUrl(filename) {
