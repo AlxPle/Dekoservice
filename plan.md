@@ -130,82 +130,48 @@
 *Зависит от всех предыдущих фаз*
 
 26. Создать VPS CX22 на Hetzner (Ubuntu 24.04, Frankfurt)
-27. Установить: PHP 8.4, PostgreSQL 16, Nginx, Supervisor, Certbot
-28. `laravel/envoy` или GitHub Actions для автодеплоя из `main` ветки
-29. SSL через Let's Encrypt (Certbot)
-30. Настроить SMTP в `.env` — данные от Strato-почты Helena
+27. Использовать существующий Caddy на хосте как единую ingress-точку (80/443)
+28. Развернуть Laravel-стек через Dockge (`app`, `web`, `queue`, `scheduler`, `db`, `redis`)
+29. Проксировать `dekoservice.alxple.com` -> `127.0.0.1:18080` в системном Caddy
+30. Настроить production `.env` + post-deploy команды (`migrate`, `cache`, `queue:restart`)
 
 ---
 
-## План деплоя без Docker (рекомендуемый)
+## Каноничный план деплоя (Dockge + Caddy)
 
 ### Цель
-Получить стабильный zero-downtime деплой Laravel-приложения на VPS без контейнеров, с откатами и базовым мониторингом.
+Получить простой и воспроизводимый прод-запуск для сервера с несколькими Docker-сервисами без конфликтов по портам.
 
-### 1) Подготовка сервера
-1. Создать пользователя `deploy`, отключить root-login по паролю, включить SSH-ключи.
-2. Настроить firewall (`ufw`): открыть `22`, `80`, `443`.
-3. Установить пакеты:
-    - `nginx`
-    - `php8.4-fpm` + расширения (`mbstring`, `xml`, `curl`, `zip`, `pgsql`, `bcmath`, `intl`, `gd`, `redis` при необходимости)
-    - `composer`
-    - `postgresql`
-    - `supervisor`
-    - `certbot` + `python3-certbot-nginx`
-    - `nodejs` + `npm` (если билд фронта на сервере)
+### 1) Принцип инфраструктуры
+1. Caddy на хосте остаётся единым ingress (слушает только он: 80/443).
+2. Dockge управляет только приложениями.
+3. Каждый проект публикует только localhost-порт (например `127.0.0.1:18080`).
 
-### 2) Структура релизов на сервере
-Принять структуру Capistrano-style:
-- `/var/www/dekoservice/releases/<timestamp>`
-- `/var/www/dekoservice/shared/.env`
-- `/var/www/dekoservice/shared/storage`
-- `/var/www/dekoservice/current` (symlink на актуальный релиз)
+### 2) Стек приложения
+1. `app` (php-fpm)
+2. `web` (nginx)
+3. `queue` (`php artisan queue:work`)
+4. `scheduler` (`php artisan schedule:run` циклом)
+5. `db` (PostgreSQL)
+6. `redis`
 
-Это дает атомарное переключение релизов и быстрый rollback.
+### 3) Маршрутизация домена
+1. В системном Caddy добавить `dekoservice.alxple.com`.
+2. Проксировать на `127.0.0.1:18080`.
+3. TLS выдаёт и обновляет Caddy автоматически.
 
-### 3) Первый релиз
-1. Клонировать репозиторий в новый каталог релиза.
-2. Подключить shared-файлы:
-    - симлинк `.env`
-    - симлинк `storage`
-3. Выполнить:
-    - `composer install --no-dev --prefer-dist --optimize-autoloader`
-    - `php artisan key:generate --force` (только при первом запуске)
-    - `php artisan migrate --force`
-    - `php artisan storage:link`
-    - `php artisan optimize` (кеш конфигов/роутов/видов)
-    - `npm ci && npm run build` (или собирать в CI и выкладывать артефакт)
-4. Переключить symlink `current` на новый релиз.
-5. Перезапустить `php8.4-fpm` и сделать `php artisan queue:restart`.
+### 4) Деплой-процедура
+1. `git pull`
+2. `docker compose build app`
+3. `docker compose up -d`
+4. `docker compose exec app php artisan migrate --force`
+5. `docker compose exec app php artisan optimize`
+6. `docker compose exec app php artisan queue:restart`
 
-### 4) Nginx и PHP-FPM
-1. `root` указывать на `/var/www/dekoservice/current/public`.
-2. Добавить `try_files $uri $uri/ /index.php?$query_string;`.
-3. Ограничить доступ к скрытым файлам (`.env`, `.git`).
-4. Включить gzip/brotli и базовые security headers.
-5. Выставить корректные `client_max_body_size` под загрузку фото.
-
-### 5) Очереди и планировщик
-1. Supervisor program для `php artisan queue:work --sleep=3 --tries=3 --max-time=3600`.
-2. Cron (раз в минуту):
-    - `* * * * * cd /var/www/dekoservice/current && php artisan schedule:run >> /dev/null 2>&1`
-
-### 6) SSL и домен
-1. Прописать A/AAAA записи домена на IP VPS.
-2. Выпустить сертификат: `certbot --nginx -d dekoservice-kunz.de -d www.dekoservice-kunz.de`.
-3. Проверить автообновление сертификата (`systemctl status certbot.timer`).
-
-### 7) CI/CD без Docker (GitHub Actions)
-Pipeline:
-1. На push в `main`: запустить тесты (`php artisan test`).
-2. Собирать production assets (`npm run build`).
-3. По SSH выполнить deploy-скрипт на сервере: новый релиз, install, migrate, cache, symlink switch.
-4. Хранить 5-10 последних релизов, старые удалять.
-
-### 8) Откат
-1. Сменить symlink `current` на предыдущий релиз.
-2. Перезапустить PHP-FPM и очередь.
-3. Если была несовместимая миграция, откатывать только заранее подготовленным down-скриптом.
+### 5) Проверка после релиза
+1. `curl -I https://dekoservice.alxple.com`
+2. Проверка страниц (`/`, `/galerie`, `/kontakt`, `/admin`)
+3. Проверка очереди и scheduler по логам контейнеров
 
 ---
 
