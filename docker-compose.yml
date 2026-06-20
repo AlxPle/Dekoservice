@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     working_dir: /var/www/dekoservice.alxple.com
-    command: sh -c "mkdir -p /tmp/build_volume && cp -r /var/www/dekoservice.alxple.com/public/build/* /tmp/build_volume/ 2>/dev/null || true; php-fpm"
+    command: sh -c "mkdir -p /tmp/build_volume && cp -a /var/www/dekoservice.alxple.com/public/build/* /tmp/build_volume/ 2>/dev/null || true; chmod -R 755 /tmp/build_volume; php-fpm"
     volumes:
       - ./app/.env:/var/www/dekoservice.alxple.com/.env
       - ./app/storage:/var/www/dekoservice.alxple.com/storage
