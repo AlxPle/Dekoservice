@@ -97,8 +97,8 @@ docker compose exec app php artisan migrate --force
 # Создаем администратора для панели управления Filament
 docker compose exec app php artisan make:filament-user --name="Admin" --email="admin@example.com" --password="changeme"
 
-# Создаем симлинк для публичных файлов
-docker compose exec app php artisan storage:link
+# Создаем симлинк для публичных файлов прямо на хосте (важно для Nginx)
+cd app/public && ln -sfn ../storage/app/public ./storage && cd ../..
 
 # Очищаем и кэшируем конфиги
 docker compose exec app php artisan optimize:clear
