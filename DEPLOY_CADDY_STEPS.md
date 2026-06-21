@@ -33,6 +33,10 @@ sudo mkdir -p /opt/stacks/dekoservice
 sudo chown -R $USER:$USER /opt/stacks/dekoservice
 cd /opt/stacks/dekoservice
 git clone <repo-url> .
+mv /opt/stacks/dekoservice/Dekoservice/* /opt/stacks/dekoservice/
+mv /opt/stacks/dekoservice/Dekoservice/.* /opt/stacks/dekoservice/ 2>/dev/null || true
+rmdir /opt/stacks/dekoservice/Dekoservice
+ls /opt/stacks/dekoservice
 ```
 
 Создать production `.env`:

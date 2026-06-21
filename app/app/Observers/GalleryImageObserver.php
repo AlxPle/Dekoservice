@@ -46,11 +46,24 @@ class GalleryImageObserver
         }
 
         $relativePath = $galleryImage->normalizedPath();
-        $path = Storage::disk('public')->path($relativePath);
+        $disk = Storage::disk('public');
+
+        if (!$disk->exists($relativePath)) {
+            $pathWithoutExt = preg_replace('/\.[\w]+$/', '', $relativePath);
+            foreach (['jpg', 'jpeg', 'png', 'heic', 'heif'] as $ext) {
+                $testPath = $pathWithoutExt . '.' . $ext;
+                if ($disk->exists($testPath)) {
+                    $relativePath = $testPath;
+                    break;
+                }
+            }
+        }
+
+        $path = $disk->path($relativePath);
 
         if (file_exists($path)) {
             ImageOptimizer::optimize($path);
-            GenerateGalleryThumbnail::dispatch($relativePath);
+            GenerateGalleryThumbnail::dispatch($galleryImage->normalizedPath());
         }
     }
 
