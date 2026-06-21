@@ -181,6 +181,9 @@ docker compose up -d
 # Накатываем новые миграции БД (если есть)
 docker compose exec app php artisan migrate --force
 
+# Починить уже загруженные битые изображения
+docker compose exec app php artisan gallery:optimize --sync
+
 # Сбрасываем кэш
 docker compose exec app php artisan optimize:clear
 docker compose exec app php artisan optimize
