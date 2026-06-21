@@ -18,10 +18,16 @@ RUN npm run build
 FROM php:8.4-fpm
 
 RUN apt-get update && apt-get install -y \
-    libicu-dev libzip-dev libpng-dev libonig-dev libxml2-dev libpq-dev git unzip zip \
+    libicu-dev libzip-dev libpng-dev libjpeg62-turbo-dev libwebp-dev libonig-dev libxml2-dev libpq-dev \
+    git unzip zip \
     && pecl install redis \
     && docker-php-ext-enable redis \
-    && docker-php-ext-install intl pdo_pgsql zip gd bcmath
+    && docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-install -j$(nproc) intl pdo_pgsql zip gd bcmath
+
+# Install image optimizer CLI tools (required by spatie/image-optimizer)
+RUN apt-get install -y \
+    jpegoptim optipng pngquant webp gifsicle
 
 RUN echo "upload_max_filesize = 50M\npost_max_size = 50M\nmemory_limit = 256M" > /usr/local/etc/php/conf.d/uploads.ini
 

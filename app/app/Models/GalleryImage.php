@@ -57,10 +57,17 @@ class GalleryImage extends Model
     public function getOptimizedUrlAttribute(): string
     {
         $normalized = $this->normalizedPath();
-        $webpPath = preg_replace('/\.[\w]+$/', '.webp', $normalized);
 
-        if (Storage::disk('public')->exists($webpPath)) {
-            return asset('storage/' . $webpPath);
+        if (Storage::disk('public')->exists($normalized)) {
+            return asset('storage/' . $normalized);
+        }
+
+        $pathWithoutExt = preg_replace('/\.[\w]+$/', '', $normalized);
+        foreach (['jpg', 'jpeg', 'png'] as $ext) {
+            $testPath = $pathWithoutExt . '.' . $ext;
+            if (Storage::disk('public')->exists($testPath)) {
+                return asset('storage/' . $testPath);
+            }
         }
 
         return asset('storage/' . $normalized);

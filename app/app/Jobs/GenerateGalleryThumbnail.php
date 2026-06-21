@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
@@ -50,6 +51,7 @@ class GenerateGalleryThumbnail implements ShouldQueue
             }
 
             if (!$found) {
+                Log::warning("GenerateGalleryThumbnail: source file not found for {$relativePath}");
                 return;
             }
         }
@@ -58,6 +60,11 @@ class GenerateGalleryThumbnail implements ShouldQueue
         $sourceImage = @imagecreatefromstring($sourceBinary);
 
         if ($sourceImage === false) {
+            $error = error_get_last();
+            Log::warning("GenerateGalleryThumbnail: imagecreatefromstring failed for {$actualPath}", [
+                'error' => $error['message'] ?? 'unknown',
+                'gd_info' => gd_info(),
+            ]);
             return;
         }
 
@@ -65,6 +72,7 @@ class GenerateGalleryThumbnail implements ShouldQueue
         $sourceHeight = imagesy($sourceImage);
 
         if ($sourceWidth <= 0 || $sourceHeight <= 0) {
+            Log::warning("GenerateGalleryThumbnail: invalid image dimensions for {$actualPath}");
             imagedestroy($sourceImage);
             return;
         }
