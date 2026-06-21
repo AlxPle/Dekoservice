@@ -72,9 +72,7 @@ class GalleryImageResource extends Resource
                     ->width(80)
                     ->height(60)
                     ->extraImgAttributes(['style' => 'object-fit:cover;border-radius:4px;'])
-                    ->getStateUsing(fn(GalleryImage $record): string => str_starts_with($record->filename, 'gallery/')
-                        ? $record->filename
-                        : 'gallery/' . $record->filename),
+                    ->getStateUsing(fn(GalleryImage $record): string => $record->thumbPath(184)),
                 Tables\Columns\TextColumn::make('alt_text')
                     ->label('Beschreibung')
                     ->limit(40),
